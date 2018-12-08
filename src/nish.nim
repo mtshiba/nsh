@@ -199,18 +199,20 @@ proc main() =
             try:
                 when defined(windows):
                     sh.errc = execCmd(order)
-                    continue
+                    if sh.errc != 0:
+                        raise newException(NishRunTimeError, "")
+                    else:
+                        continue
                 else:
-                    var outs = ""
-                    (outs, sh.errc) = execCmdEx(order)
-                    if outs.match(re"sh: 1: (.*): not found").isSome:
+                    sh.errc = execCmd(order)
+                    if sh.errc != 0:
                         raise newException(NishRunTimeError, "")
                     else:
                         continue
             except NishRunTimeError:
+                # If this failed, execute as nim code.
                 discard
             except:
-                # If this failed, execute as nim code.
                 discard
 
 
