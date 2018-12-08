@@ -12,7 +12,7 @@ import nshpkg/unixcmd
 
 
 const
-    version = "0.1.4"
+    version = "0.1.5"
     date = "Dec 8 2018, 23:35:00"
     message = fmt"""
 Nsh {version} (default, {date}) [{hostOS}, {hostCPU}]
@@ -206,7 +206,7 @@ proc main() =
                         continue
                 else:
                     var outs = ""
-                    (outs, sh.errc) = execCmd(order)
+                    (outs, sh.errc) = execCmdEx(order)
                     if sh.errc != 0:
                         raise newException(NshRunTimeError, "")
                     else:
