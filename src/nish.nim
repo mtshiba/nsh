@@ -12,7 +12,7 @@ import nishpkg/unixcmd
 
 const
     version = "0.1.1"
-    date = "Dec 7 2018, 14:46:00"
+    date = "Dec 8 2018, 22:38:00"
     message = fmt"""
 Nish {version} (default, {date}) [{hostOS}, {hostCPU}]
     nish [-tcc]
