@@ -6,16 +6,17 @@ import os
 import terminal
 import colors
 
-import nishpkg/unixcmd
+import nshpkg/unixcmd
 
 {.push checks:off, optimization: speed.}
+
 
 const
     version = "0.1.3"
     date = "Dec 8 2018, 23:35:00"
     message = fmt"""
-Nish {version} (default, {date}) [{hostOS}, {hostCPU}]
-    nish [-tcc]
+Nsh {version} (default, {date}) [{hostOS}, {hostCPU}]
+    nsh [-tcc]
     -tcc          : using tcc compiler for compiling. you can change later.
 
     :back         : clear last line.
@@ -25,7 +26,7 @@ Nish {version} (default, {date}) [{hostOS}, {hostCPU}]
     :tcc on|off   : switch compiler to tcc/default.
 """
     initcode = """
-import nishpkg/unixcmd
+import nshpkg/unixcmd
 
 template on_ce(state: void): void = discard
 template on_ce[T: not void](arg: T): void =
@@ -61,7 +62,7 @@ type BlockKind = enum
     Type
     Other
 
-type NishRunTimeError = object of Exception
+type nshRunTimeError = object of Exception
 
 type Shell = object of RootObj
     nowblock: seq[BlockKind]
@@ -88,7 +89,7 @@ proc escape(s: var string) =
     s = s.replace(re".\[D", "").replace("[", "")
 
 proc save(self: Shell) =
-    let f = open(fmt"{rootDir}/nishcathe/repl.nim", fmWrite)
+    let f = open(fmt"{rootDir}/nshcathe/repl.nim", fmWrite)
     f.write(self.code)
     f.close()
 
@@ -200,16 +201,16 @@ proc main() =
                 when defined(windows):
                     sh.errc = execCmd(order)
                     if sh.errc != 0:
-                        raise newException(NishRunTimeError, "")
+                        raise newException(nshRunTimeError, "")
                     else:
                         continue
                 else:
                     sh.errc = execCmd(order)
                     if sh.errc != 0:
-                        raise newException(NishRunTimeError, "")
+                        raise newException(nshRunTimeError, "")
                     else:
                         continue
-            except NishRunTimeError:
+            except nshRunTimeError:
                 # If this failed, execute as nim code.
                 discard
             except:
@@ -249,7 +250,7 @@ proc main() =
             if sh.nowblock != @[Main]:
                 discard sh.nowblock.pop
             if sh.nowblock.len == 1 and not sh.pastblock.isContinueBlock():
-                let (outs, errc) = execCmdEx(fmt"nim c -r {useTcc} --checks:off --hints:off --opt:none --verbosity:0 {rootDir}/nishcathe/repl.nim")
+                let (outs, errc) = execCmdEx(fmt"nim c -r {useTcc} --checks:off --hints:off --opt:none --verbosity:0 {rootDir}/nshcathe/repl.nim")
                 if errc == 0:
                     echo outs
                     sh.errc = 0
@@ -325,7 +326,7 @@ proc main() =
                     sh.nowblock.add(Other)
 
             if sh.nowblock.len() == 1 and not sh.pastblock.isContinueBlock():
-                let (outs, errc) = execCmdEx(fmt"nim c -r {useTcc} --checks:off --hints:off --opt:none --verbosity:0 {rootDir}/nishcathe/repl.nim")
+                let (outs, errc) = execCmdEx(fmt"nim c -r {useTcc} --checks:off --hints:off --opt:none --verbosity:0 {rootDir}/nshcathe/repl.nim")
                 if errc == 0:
                     echo outs
                     sh.errc = 0

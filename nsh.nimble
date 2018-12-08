@@ -19,12 +19,12 @@ elif defined(Linux):
 
 version       = "0.1.3"
 author        = "gmshiba"
-description   = "nish: NIm SHell(cross platform)"
+description   = "nsh: Nim SHell(cross platform)"
 license       = "MIT"
 binDir        = "bin"
 srcDir        = "src"
-installDirs   = @["nishpkg"]
-bin           = @["nish"]
+installDirs   = @["nshpkg"]
+bin           = @["nsh"]
 
 # Dependencies
 
