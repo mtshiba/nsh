@@ -196,8 +196,17 @@ proc main() =
         # At first, execute as shell command.
         if sh.nowblock == @[Main]:
             try:
-                sh.errc = execCmd(order)
-                continue
+                when defined(windows):
+                    sh.errc = execCmd(order)
+                    continue
+                else:
+                    sh.errc = execCmd(order)
+                    if re"sh: 1: (.*): not found".match.isSome:
+                        raise newException(OSError, "")
+                    else:
+                        continue
+            except OSError:
+                discard
             except:
                 # If this failed, execute as nim code.
                 discard
