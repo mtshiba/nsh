@@ -17,7 +17,7 @@ elif defined(Linux):
 
 # Package
 
-version       = "0.1.3"
+version       = "0.1.5"
 author        = "gmshiba"
 description   = "nsh: Nim SHell(cross platform)"
 license       = "MIT"
