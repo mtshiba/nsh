@@ -12,7 +12,7 @@ import nshpkg/unixcmd
 
 
 const
-    version = "0.1.3"
+    version = "0.1.4"
     date = "Dec 8 2018, 23:35:00"
     message = fmt"""
 Nsh {version} (default, {date}) [{hostOS}, {hostCPU}]
@@ -62,7 +62,7 @@ type BlockKind = enum
     Type
     Other
 
-type nshRunTimeError = object of Exception
+type NshRunTimeError = object of Exception
 
 type Shell = object of RootObj
     nowblock: seq[BlockKind]
@@ -201,16 +201,18 @@ proc main() =
                 when defined(windows):
                     sh.errc = execCmd(order)
                     if sh.errc != 0:
-                        raise newException(nshRunTimeError, "")
+                        raise newException(NshRunTimeError, "")
                     else:
                         continue
                 else:
-                    sh.errc = execCmd(order)
+                    var outs = ""
+                    (outs, sh.errc) = execCmd(order)
                     if sh.errc != 0:
-                        raise newException(nshRunTimeError, "")
+                        raise newException(NshRunTimeError, "")
                     else:
+                        echo outs
                         continue
-            except nshRunTimeError:
+            except NshRunTimeError:
                 # If this failed, execute as nim code.
                 discard
             except:
