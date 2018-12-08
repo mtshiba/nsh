@@ -8,9 +8,11 @@ when defined(Windows):
 elif defined(MacOSX) or defined(MacOS):
     exec "brew install tcc"
 elif defined(Linux):
-    exec "apt-get install tcc"
+    try:
+        exec "apt-get install tcc"
     # or
-    exec "yum install tcc"
+    except:
+        exec "yum install tcc"
 
 # Package
 
