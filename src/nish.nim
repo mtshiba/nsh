@@ -11,8 +11,8 @@ import nishpkg/unixcmd
 {.push checks:off, optimization: speed.}
 
 const
-    version = "0.1.2"
-    date = "Dec 8 2018, 22:38:00"
+    version = "0.1.3"
+    date = "Dec 8 2018, 23:35:00"
     message = fmt"""
 Nish {version} (default, {date}) [{hostOS}, {hostCPU}]
     nish [-tcc]
@@ -61,6 +61,7 @@ type BlockKind = enum
     Type
     Other
 
+type NishRunTimeError = object of Exception
 
 type Shell = object of RootObj
     nowblock: seq[BlockKind]
@@ -200,12 +201,13 @@ proc main() =
                     sh.errc = execCmd(order)
                     continue
                 else:
-                    sh.errc = execCmd(order)
-                    if re"sh: 1: (.*): not found".match.isSome:
-                        raise newException(OSError, "")
+                    var outs = ""
+                    (outs, sh.errc) = execCmdEx(order)
+                    if outs.match(re"sh: 1: (.*): not found").isSome:
+                        raise newException(NishRunTimeError, "")
                     else:
                         continue
-            except OSError:
+            except NishRunTimeError:
                 discard
             except:
                 # If this failed, execute as nim code.

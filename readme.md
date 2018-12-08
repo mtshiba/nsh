@@ -16,6 +16,12 @@ If you want these procs in other source code, use 'import nishpkg/unixcmd'.
 
 ![demo](demo/nishdemo.gif)
 
+# installation
+
+```
+nimble install https://github.com/gmshiba/nish
+```
+
 ## Warinig
 
 * When you install nish by nimble, probably you see this message. It's no problem. Please type 'y' to continue.
