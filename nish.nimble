@@ -8,9 +8,9 @@ when defined(Windows):
 elif defined(MacOSX) or defined(MacOS):
     exec "brew install tcc"
 elif defined(Linux):
-    exec "sudo apt-get install tcc"
+    exec "apt-get install tcc"
     # or
-    exec "sudo yum install tcc"
+    exec "yum install tcc"
 
 # Package
 

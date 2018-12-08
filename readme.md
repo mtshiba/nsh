@@ -1,4 +1,7 @@
 # nish
+[![Build Status](https://travis-ci.org/gmshiba/nish.svg?branch=master)](https://travis-ci.org/gmshiba/nish)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://github.com/yglukhov/nimble-tag)
 
 nish is the **SH**ell implemented on **NI**m.
 nish can use not only shell commands, but also Nim code.  
