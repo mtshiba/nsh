@@ -11,7 +11,7 @@ import nishpkg/unixcmd
 {.push checks:off, optimization: speed.}
 
 const
-    version = "0.1.1"
+    version = "0.1.2"
     date = "Dec 8 2018, 22:38:00"
     message = fmt"""
 Nish {version} (default, {date}) [{hostOS}, {hostCPU}]

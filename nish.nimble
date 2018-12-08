@@ -1,10 +1,10 @@
 # Installing external compiler (tcc)
 
 when defined(Windows):
-    when defined(amd64):
-        exec "installwin64.bat"
-    when defined(x86):
-        exec "installwin32.bat"
+    # when defined(amd64):
+    #    exec "installwin64.bat"
+    # when defined(x86):
+    #    exec "installwin32.bat"
 elif defined(MacOSX) or defined(MacOS):
     exec "brew install tcc"
 elif defined(Linux):
