@@ -5,6 +5,7 @@ when defined(Windows):
     #    exec "installwin64.bat"
     # when defined(x86):
     #    exec "installwin32.bat"
+    discard
 elif defined(MacOSX) or defined(MacOS):
     exec "brew install tcc"
 elif defined(Linux):
