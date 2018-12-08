@@ -29,6 +29,8 @@ Prompt: Missing directory C:\pathTo\.nimble\pkgs\nish-0.x.x\src\nishpkg. Continu
 It is good to use [TCC](https://bellard.org/tcc/) for the compiler to speed up the reaction, so if you install nish by nimble, TCC will also be downloaded together.  
 But if you are a Windows user, installing tcc is a bit complicated. when install nish by nimble, TCC will automatically download in current dir. So please move it somewhere and add the path of it.
 
+*Changes: from nish 0.1.2, install script won't run automatically. please run it yourself.
+
 * At present, you can not pass Nim's variable to a shell command directly.
 # Todo
 
