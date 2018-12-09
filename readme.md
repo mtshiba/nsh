@@ -21,7 +21,7 @@ If you want these procs in other source code, use 'import nshpkg/unixcmd'.
 # installation
 
 ```
-nimble install nsh
+nimble install https://githib.com/gmshiba/nsh
 ```
 
 ## Warinig
@@ -33,10 +33,8 @@ Prompt: Missing directory C:\pathTo\.nimble\pkgs\nsh-0.x.x\src\nshpkg. Continue?
 ```
 
 * By default, nsh's reaction for nim code is slow since Nim is a compiler language.
-It is good to use [TCC](https://bellard.org/tcc/) for the compiler to speed up the reaction, so if you install nsh by nimble, TCC will also be downloaded together.  
-But if you are a Windows user, installing tcc is a bit complicated. when install nsh by nimble, TCC will automatically download in current dir. So please move it somewhere and add the path of it.
+It is good to use [TCC](https://bellard.org/tcc/) for the compiler to speed up the reaction. So I recommend to install it. You can use ':tcc on' to use TCC for compiler.
 
-*Changes: from nsh 0.1.2, install script won't run automatically. please install tcc manually if you are Windows user.
 
 # Todo
 
