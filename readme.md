@@ -12,6 +12,8 @@ so you can use nsh instead of Cygwin!
 * Commands are implemented in 'nshpkg/unixcmd.nim'.
 If you want these procs in other source code, use 'import nshpkg/unixcmd'.
 
+* You can use 'tocl' to export nim variables to shell.
+
 # demo
 
 ![demo](demo/nshdemo.gif)
