@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://github.com/yglukhov/nimble-tag)
 
-nsh is the **SH**ell implemented on **NI**m.
+nsh is the **SH**ell implemented on **N**im.
 nsh can use not only shell commands, but also Nim code.  
 Some shell commands are wrapped or implemanted by Nim,
 so you can use nsh instead of Cygwin!
@@ -19,7 +19,7 @@ If you want these procs in other source code, use 'import nshpkg/unixcmd'.
 # installation
 
 ```
-nimble install https://github.com/gmshiba/nsh
+nimble install nsh
 ```
 
 ## Warinig
@@ -37,7 +37,6 @@ But if you are a Windows user, installing tcc is a bit complicated. when install
 
 *Changes: from nsh 0.1.2, install script won't run automatically. please run it yourself.
 
-* At present, you can not pass Nim's variable to a shell command directly.
 # Todo
 
 * Implement more commands

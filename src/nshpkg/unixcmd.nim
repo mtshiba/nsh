@@ -11,23 +11,19 @@ type
     Error = object of Exception
     CLIstring = distinct string
 
-proc createRoot*(): string =
-    if not existsDir("nshcathe"):
-        createDir("nshcathe")
-    if not existsFile("nshcathe/hist.cfg"):
-        let f = open("nshcathe/hist.cfg", fmWrite)
+proc createRoot*() =
+    if not existsDir(getHomeDir() & "/nshcathe"):
+        createDir(getHomeDir() & "/nshcathe")
+    if not existsFile(getHomeDir() & "/nshcathe/hist.cfg"):
+        let f = open(getHomeDir() & "/nshcathe/hist.cfg", fmWrite)
         f.writeLine("0 start")
         f.close
-    if not existsFile("nshcathe/rootDir.txt"):
-        let f = open("nshcathe/rootDir.txt", fmWrite)
+    if not existsFile(getHomeDir() & "/nshcathe/rootDir.txt"):
+        let f = open(getHomeDir() & "/nshcathe/rootDir.txt", fmWrite)
         f.writeLine(getCurrentDir())
         f.close
-    let f = open("nshcathe/rootDir.txt", fmRead)
-    defer:
-        f.close
-    return f.readLine()
 
-let rootDir* = createRoot()
+createRoot()
 
 template raiseError(errc= -1) =
     raise newException(Error, "command failed with code " & $errc)
@@ -56,12 +52,12 @@ iterator items*(cliS: CLIstring): string =
         yield l
 
 proc addhist(com: string) =
-    let hist = open(fmt"{rootDir}/nshcathe/hist.cfg", fmAppend)
+    let hist = open(getHomeDir() & "/nshcathe/hist.cfg", fmAppend)
     hist.write(com)
     hist.close
 
 proc getidx(): int =
-    let histForRead = open(fmt"{rootDir}/nshcathe/hist.cfg", fmRead)
+    let histForRead = open(getHomeDir() & "/nshcathe/hist.cfg", fmRead)
     defer:
         histForRead.close
     # BUG: foo.readAll() will throw an error in tcc!
@@ -104,21 +100,21 @@ template `>>`*(x: CLIstring, fileName: untyped): untyped =
     f.close()
 
 proc `!`*(idx: int): CLIstring =
-    let f = open(fmt"{rootDir}/nshcathe/hist.cfg", fmRead)
+    let f = open(getHomeDir() & "/nshcathe/hist.cfg", fmRead)
     while not f.endOfFile:
         let line = f.readLine()
         if line.find($idx) != -1:
             addhist($(getidx()+1) & " " & line.split(" ")[1] & "\n")
-            let errc = execShellCmd(fmt"""{line.split(" ")[1]} > {rootDir}/nshcathe/res.txt""")
+            let errc = execShellCmd(fmt"""{line.split(" ")[1]} > {getHomeDir()}/nshcathe/res.txt""")
             if errc != 0:
                 raiseError(errc)
             let
-                res = open(fmt"{rootDir}/nshcathe/res.txt", fmRead)
+                res = open(getHomeDir() & "/nshcathe/res.txt", fmRead)
                 resall = res.readAll()
             res.close()
             return CLIstring(resall)
 proc `!`*(com: string): CLIstring =
-    let f = open(fmt"{rootDir}/nshcathe/hist.cfg", fmRead)
+    let f = open(getHomeDir() & "/nshcathe/hist.cfg", fmRead)
     var l: seq[string] = @[]
     for i in f.readAll().split("\n"):
         l.add(i)
@@ -126,11 +122,11 @@ proc `!`*(com: string): CLIstring =
     for line in l:
         if line.find(com) != -1:
             addhist($(getidx()+1) & " " & line.split(" ")[1] & "\n")
-            let errc = execShellCmd(fmt"""{line.split(" ")[1]} > {rootDir}/nshcathe/res.txt""")
+            let errc = execShellCmd(fmt"""{line.split(" ")[1]} > {getHomeDir()}/nshcathe/res.txt""")
             if errc != 0:
                 raiseError(errc)
             let
-                res = open(fmt"{rootDir}/nshcathe/res.txt", fmRead)
+                res = open(getHomeDir() & "/nshcathe/res.txt", fmRead)
                 resall = res.readAll()
             res.close()
             return CLIstring(resall)
@@ -214,12 +210,12 @@ proc grep*(args): CLIstring =
 proc grep*(fileName: CLIstring, args): CLIstring =
     let argsStr = args.join(" ")
     addhist(fmt"{getidx()+1} echo someFile | grep {argsStr}" & "\n")
-    let f = open(fmt"{rootDir}/nshcathe/log.txt", fmWrite)
+    let f = open(getHomeDir() & "/nshcathe/log.txt", fmWrite)
     f.write(fileName)
     f.close()
-    let errc = execShellCmd(fmt"cat {rootDir}/nshcathe/log.txt | grep {argsStr} > {rootDir}/nshcathe/res.txt")
+    let errc = execShellCmd(fmt"cat {getHomeDir()}/nshcathe/log.txt | grep {argsStr} > {getHomeDir()}/nshcathe/res.txt")
     let
-        res = open(fmt"{rootDir}/nshcathe/res.txt", fmRead)
+        res = open(getHomeDir() & "/nshcathe/res.txt", fmRead)
         outs = res.readAll()
     res.close
     return CLIstring(outs)
@@ -227,12 +223,15 @@ proc grep*(fileName: CLIstring, args): CLIstring =
 proc wc*(args): CLIstring =
     exec("wc", args)
 proc wc*(cliS: CLIstring, args): CLIstring =
-    let f = open("nshcathe/log.txt", fmWrite)
+    let f = open(getHomeDir() & "/nshcathe/log.txt", fmWrite)
     f.write(cliS)
     f.close
-    discard execShellCmd("cat nshcathe/log.txt | wc " & args.join(" ") & " > nshcathe/res.txt")
-    let f2 = open("nshcathe/res.txt", fmRead)
+    discard execShellCmd(fmt"cat {getHomeDir()}/nshcathe/log.txt | wc " & args.join(" ") & fmt" > {getHomeDir()}nshcathe/res.txt")
+    let f2 = open(getHomeDir() & "/nshcathe/res.txt", fmRead)
     CLIstring(f2.readAll())
+
+proc join*(args): CLIstring =
+    exec("join", args)
 
 proc diff*(args): CLIstring =
     exec("diff", args)
@@ -259,16 +258,16 @@ proc nkf*(args): CLIstring =
 proc history*(): CLIstring =
     addhist(fmt"{getidx()+1} history" & "\n")
     let
-        hist = open(fmt"{rootDir}/nshcathe/hist.cfg", fmRead)
+        hist = open(getHomeDir() & "/nshcathe/hist.cfg", fmRead)
         all = hist.readAll()
     hist.close
     return CLIstring(all)
 
 proc ps*(args): CLIstring =
     addhist(fmt"""{getidx()+1} ps {args.join(" ")}""" & "\n")
-    let errc = execShellCmd(fmt"""ps {args.join(" ")} > {rootDir}/nshcathe/res.txt""")
+    let errc = execShellCmd(fmt"""ps {args.join(" ")} > {getHomeDir()}/nshcathe/res.txt""")
     let
-        res = open(fmt"{rootDir}/nshcathe/res.txt", fmRead)
+        res = open(getHomeDir() & "/nshcathe/res.txt", fmRead)
         outs = res.readAll()
     res.close
     return CLIstring(outs)
@@ -283,24 +282,24 @@ proc lp*(option, fileName: string) =
     addhist(fmt"{getidx()+1} lp {option} {fileName}" & "\n")
     when defined(windows):
         var com = ""
-        let f = open(fmt"{rootDir}/nshcathe/ftpcom.txt", fmWrite)
+        let f = open(getHomeDir() & "/nshcathe/ftpcom.txt", fmWrite)
         let ipconfig = option.split(" ").find("-S")
         if ipconfig != -1:
             com &= fmt"""open {option.split(" ")[ipconfig+1]}""" & "\n"
         com &= fmt"put {fileName}"
         f.write(com)
         f.close()
-        discard execProcess("ftp -s:nshcathe/ftpcom.txt")
+        discard execProcess(fmt"ftp -s:{getHomeDir()}/nshcathe/ftpcom.txt")
     else:
         discard execProcess(fmt"lp {option} {fileName}")
 
 proc lpstat*() =
     addhist(fmt"{getidx()+1} lpstat" & "\n")
     when defined(windows):
-        let f = open(fmt"{rootDir}/nshcathe/ftpcom.txt", fmWrite)
+        let f = open(getHomeDir() & "/nshcathe/ftpcom.txt", fmWrite)
         f.write("status")
         f.close()
-        discard execProcess("ftp -s:nshcathe/ftpcom.txt")
+        discard execProcess(fmt"ftp -s:{getHomeDir()}/nshcathe/ftpcom.txt")
     else:
         discard execProcess("lpstat")
 
@@ -470,7 +469,7 @@ template time*(cmd: untyped): untyped =
     CListring("real    " & tim & "\nuser    " & tim & "\nsys     " & tim)
 
 template xargs*(res: CLIstring, cmd: untyped, args: varargs[string]): CLIstring =
-    let f = open(fmt"{rootDir}/nshcathe/res.txt", fmWrite)
+    let f = open(getHomeDir() & "/nshcathe/res.txt", fmWrite)
     f.write(res)
     f.close()
 
@@ -488,12 +487,12 @@ template xargs*(res: CLIstring, cmd: untyped, args: varargs[string]): CLIstring 
     if args.len == 0:
         addhist($(getidx()+1) & fmt" xargs " & cmdName & "\n")
         # cmdName is undeclared when this uses 'fmt'. it's fmt's bug?
-        discard execShellCmd(fmt"cat {rootDir}/nshcathe/res.txt | xargs " & cmdName & fmt" > {rootDir}/nshcathe/out.txt")
+        discard execShellCmd(fmt"cat {getHomeDir()}/nshcathe/res.txt | xargs " & cmdName & fmt" > {getHomeDir()}/nshcathe/out.txt")
     else:
         addhist($(getidx()+1) & fmt" xargs " & cmdName & " " & args.join(" ") & "\n")
-        discard execShellCmd(fmt"cat {rootDir}/nshcathe/res.txt | xargs " & cmdName & " " & args.join(" ") & fmt" > {rootDir}/nshcathe/out.txt")
+        discard execShellCmd(fmt"cat {getHomeDir()}/nshcathe/res.txt | xargs " & cmdName & " " & args.join(" ") & fmt" > {getHomeDir()}/nshcathe/out.txt")
     let
-        f2 = open(fmt"{rootDir}/nshcathe/out.txt", fmRead)
+        f2 = open(getHomeDir() & "/nshcathe/out.txt", fmRead)
         resall = f2.readAll()
     f.close()
     CLIstring(resall)

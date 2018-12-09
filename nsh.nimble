@@ -25,14 +25,15 @@ elif defined(Linux):
 
 # Package
 
-version       = "0.1.5"
+version       = "0.2.1"
 author        = "gmshiba"
 description   = "nsh: Nim SHell(cross platform)"
 license       = "MIT"
 binDir        = "bin"
 srcDir        = "src"
+# installFiles  = @["tocli.bat"]
 installDirs   = @["nshpkg"]
-bin           = @["nsh"]
+bin           = @["nsh", "tocl"]
 
 # Dependencies
 

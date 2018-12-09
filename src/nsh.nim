@@ -12,8 +12,8 @@ import nshpkg/unixcmd
 
 
 const
-    version = "0.1.5"
-    date = "Dec 8 2018, 23:35:00"
+    version = "0.2.1"
+    date = "Dec 9 2018, 19:04:00"
     message = fmt"""
 Nsh {version} (default, {date}) [{hostOS}, {hostCPU}]
     nsh [-tcc]
@@ -67,7 +67,7 @@ type NshRunTimeError = object of Exception
 type Shell = object of RootObj
     nowblock: seq[BlockKind]
     pastblock: seq[BlockKind]
-    code: string
+    code*: string
     errc: int
 
 var useTcc = ""
@@ -87,9 +87,8 @@ proc showprefix(sh: Shell) =
 
 proc escape(s: var string) =
     s = s.replace(re".\[D", "").replace("[", "")
-
 proc save(self: Shell) =
-    let f = open(fmt"{rootDir}/nshcathe/repl.nim", fmWrite)
+    let f = open(getHomeDir() & "/nshcathe/repl.nim", fmWrite)
     f.write(self.code)
     f.close()
 
@@ -114,7 +113,7 @@ proc delLine(self: var Shell) =
     codelines.del(codelines.high-1)
     self.code = codelines.join("\n") & "\n"
 
-proc delOnce(self: var Shell) =
+proc delOnce*(self: var Shell) =
     self.code = self.code.replace(re"once.*", "")
     self.code = self.code.replace(re"case.*\n\n", "\n")
     self.code = self.code.replace(re"\n\nelse:\n( .*)*\n", "\n\n")
@@ -157,7 +156,7 @@ proc orderType(self: Shell, order: string): string =
         else:
             return "oncecall"
 
-proc newShell(): Shell =
+proc newShell*(): Shell =
     result.nowblock = @[Main]
     result.pastblock = @[Main]
     result.code = initcode
@@ -182,43 +181,6 @@ proc main() =
 
         var order = stdin.readline()
 
-
-        # Change directory action must run on this file.
-        if order.startsWith("cd ") or order.startswith("cd("):
-            try:
-                cd order.multireplace(("cd ", ""), ("\"", ""), ("cd(", ""), (")", ""))
-                sh.errc = 0
-            except:
-                stdout.styledWrite(fgRed, "Error: ")
-                stdout.write("Directory not found")
-                stdout.flushFile()
-                sh.errc = -1
-            continue
-
-        # At first, execute as shell command.
-        if sh.nowblock == @[Main]:
-            try:
-                when defined(windows):
-                    sh.errc = execCmd(order)
-                    if sh.errc != 0:
-                        raise newException(NshRunTimeError, "")
-                    else:
-                        continue
-                else:
-                    var outs = ""
-                    (outs, sh.errc) = execCmdEx(order)
-                    if sh.errc != 0:
-                        raise newException(NshRunTimeError, "")
-                    else:
-                        echo outs
-                        continue
-            except NshRunTimeError:
-                # If this failed, execute as nim code.
-                discard
-            except:
-                discard
-
-
         case order
         of ":quit":
             break
@@ -239,12 +201,45 @@ proc main() =
             continue
         of ":tcc on":
             useTcc = "--cc:tcc"
+            continue
         of ":tcc off":
             useTcc = ""
+            continue
         # for debuging
         of ":save":
             sh.save()
             continue
+        else:
+            discard
+
+        # Change directory action must run on this file.
+        if order.startsWith("cd ") or order.startswith("cd("):
+            try:
+                cd order.multireplace(("cd ", ""), ("\"", ""), ("cd(", ""), (")", ""))
+                sh.errc = 0
+            except:
+                stdout.styledWrite(fgRed, "Error: ")
+                stdout.write("Directory not found")
+                stdout.flushFile()
+                sh.errc = -1
+            continue
+
+        # At first, execute as shell command.
+        if sh.nowblock == @[Main]:
+            try:
+                sh.errc = execShellCmd(order & fmt" 2> {getHomeDir()}/nshcathe/error.txt")
+                if sh.errc != 0:
+                    raise newException(NshRunTimeError, "")
+                else:
+                    continue
+            except NshRunTimeError:
+                # If this failed, execute as nim code.
+                discard
+            except:
+                discard
+
+
+        case order
         of "":
             if sh.nowblock[^1] == Of:
                 discard sh.nowblock.pop
@@ -252,7 +247,7 @@ proc main() =
             if sh.nowblock != @[Main]:
                 discard sh.nowblock.pop
             if sh.nowblock.len == 1 and not sh.pastblock.isContinueBlock():
-                let (outs, errc) = execCmdEx(fmt"nim c -r {useTcc} --checks:off --hints:off --opt:none --verbosity:0 {rootDir}/nshcathe/repl.nim")
+                let (outs, errc) = execCmdEx(fmt"nim c -r {useTcc} --checks:off --hints:off --opt:none --verbosity:0 {getHomeDir()}/nshcathe/repl.nim")
                 if errc == 0:
                     echo outs
                     sh.errc = 0
@@ -328,7 +323,7 @@ proc main() =
                     sh.nowblock.add(Other)
 
             if sh.nowblock.len() == 1 and not sh.pastblock.isContinueBlock():
-                let (outs, errc) = execCmdEx(fmt"nim c -r {useTcc} --checks:off --hints:off --opt:none --verbosity:0 {rootDir}/nshcathe/repl.nim")
+                let (outs, errc) = execCmdEx(fmt"nim c -r {useTcc} --checks:off --hints:off --opt:none --verbosity:0 {getHomeDir()}/nshcathe/repl.nim")
                 if errc == 0:
                     echo outs
                     sh.errc = 0
