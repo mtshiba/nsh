@@ -7,7 +7,10 @@ when defined(Windows):
     #    exec "installwin32.bat"
     discard
 elif defined(MacOSX) or defined(MacOS):
-    exec "brew install tcc"
+    try:
+        exec "brew install tcc"
+    except:
+        echo "Sorry I failed to install tcc. Please install manually."
 elif defined(Linux):
     try:
         exec "apt-get -y update"

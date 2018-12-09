@@ -32,14 +32,71 @@ nimble install nsh
 Prompt: Missing directory C:\pathTo\.nimble\pkgs\nsh-0.x.x\src\nshpkg. Continue? [y/N]
 ```
 
-
 * By default, nsh's reaction for nim code is slow since Nim is a compiler language.
 It is good to use [TCC](https://bellard.org/tcc/) for the compiler to speed up the reaction, so if you install nsh by nimble, TCC will also be downloaded together.  
 But if you are a Windows user, installing tcc is a bit complicated. when install nsh by nimble, TCC will automatically download in current dir. So please move it somewhere and add the path of it.
 
-*Changes: from nsh 0.1.2, install script won't run automatically. please run it yourself.
+*Changes: from nsh 0.1.2, install script won't run automatically. please install tcc manually if you are Windows user.
 
 # Todo
 
 * Implement more commands
 * Tab complement
+
+# Available commands list
+
+| Command Name | Proc Name | Can receive value |
+| :----------- | --------: | :---------------: |
+| pwd          |       pwd |         ×         |
+| cd           |        cd |         ×         |
+| rm           |        rm |         ×         |
+| ls           |        ls |         ×         |
+| mkdir        |     mkdir |         ×         |
+| rmdir        |     rmdir |         ×         |
+| cp           |        cp |         ×         |
+| mv           |        mv |         ×         |
+| pushd        |     pushd |         ×         |
+| popd         |      popd |         ×         |
+| cat          |       cat |         ×         |
+| touch        |     touch |         ×         |
+| file         |      file |         ×         |
+| find         |     ffind |         ×         |
+| locate       |    locate |         ×         |
+| more         |      more |         ×         |
+| less         |      less |         ×         |
+| head         |      head |         ×         |
+| tail         |      tail |         ×         |
+| grep         |      grep |         ○         |
+| wc           |        wc |         ○         |
+| join         |      join |         ×         |
+| diff         |      diff |         ×         |
+| cut          |       cut |         ×         |
+| uniq         |      uniq |         ×         |
+| sort         |      sort |         ×         |
+| nkf          |       nkf |         ×         |
+| history      |   history |         ×         |
+| ps           |        ps |         ×         |
+| kill         |      kill |         ×         |
+| lp           |        lp |         ×         |
+| lpstat       |    lpstat |         ×         |
+| cancel       |    cancel |         ×         |
+| du           |        du |         ×         |
+| ln           |        ln |         ×         |
+| man          |       man |         ×         |
+| which        |     which |         ×         |
+| tar          |       tar |         ×         |
+| shutdown     |  shutdown |         ×         |
+| reboot       |    reboot |         ×         |
+| hostname     |  hostname |         ×         |
+| groups       |    groups |         ×         |
+| chown        |     chown |         ×         |
+| chgrp        |     chgrp |         ×         |
+| who          |       who |         ×         |
+| whoami       |    whoami |         ×         |
+| set          |      vset |         ×         |
+| printenv     |  printenv |         ×         |
+| watch        |     watch |         ×         |
+| date         |      date |         ×         |
+| sleep        |     sleep |         ×         |
+| time         |      time |         ×         |
+| xargs        |     xargs |         ×         |
