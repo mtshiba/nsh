@@ -10,10 +10,18 @@ elif defined(MacOSX) or defined(MacOS):
     exec "brew install tcc"
 elif defined(Linux):
     try:
-        exec "apt-get install tcc"
+        exec "apt-get -y update"
+        exec "apt-get -y install tcc"
     # or
     except:
-        exec "yum install tcc"
+        try:
+            exec "yum -y update"
+            exec "yum -y install tcc"
+        except:
+            try:
+                exec "npm -g install tcc"
+            except:
+                echo "Sorry I failed to install tcc. Please install manually."
 
 # Package
 
