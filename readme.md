@@ -68,6 +68,7 @@ But if you are a Windows user, installing tcc is a bit complicated. when install
 | tail         |      tail |         ×         |
 | grep         |      grep |         ○         |
 | wc           |        wc |         ○         |
+| sed          |       sed |         ○         |
 | join         |      join |         ×         |
 | diff         |      diff |         ×         |
 | cut          |       cut |         ×         |

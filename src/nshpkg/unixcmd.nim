@@ -230,6 +230,16 @@ proc wc*(cliS: CLIstring, args): CLIstring =
     let f2 = open(getHomeDir() & "/nshcathe/res.txt", fmRead)
     CLIstring(f2.readAll())
 
+proc sed*(args): CLIstring =
+    exec("sed", args)
+proc sed*(cliS: CLIstring, args): CLIstring =
+    let f = open(getHomeDir() & "/nshcathe/log.txt", fmWrite)
+    f.write(cliS)
+    f.close
+    discard execShellCmd(fmt"cat {getHomeDir()}/nshcathe/log.txt | sed " & args.join(" ") & fmt" > {getHomeDir()}nshcathe/res.txt")
+    let f2 = open(getHomeDir() & "/nshcathe/res.txt", fmRead)
+    CLIstring(f2.readAll())
+
 proc join*(args): CLIstring =
     exec("join", args)
 
@@ -341,9 +351,6 @@ proc ln*(args) =
 proc telnet*(host: string) = discard
 
 proc ssh*(host: string): CLIstring = discard
-
-proc sed*(args): CLIstring =
-    exec("sed", args)
 
 proc scp*(args): CLIstring = discard
 
