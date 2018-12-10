@@ -67,7 +67,8 @@ It is good to use [TCC](https://bellard.org/tcc/) for the compiler to speed up t
 | grep         |      grep |         ○         |
 | wc           |        wc |         ○         |
 | sed          |       sed |         ○         |
-| join         |      join |         ×         |
+| tee          |       tee |         ○         |
+| join         |     fjoin |         ×         |
 | diff         |      diff |         ×         |
 | cut          |       cut |         ×         |
 | uniq         |      uniq |         ×         |
@@ -84,6 +85,7 @@ It is good to use [TCC](https://bellard.org/tcc/) for the compiler to speed up t
 | man          |       man |         ×         |
 | which        |     which |         ×         |
 | tar          |       tar |         ×         |
+| id           |        id |         ×         |
 | shutdown     |  shutdown |         ×         |
 | reboot       |    reboot |         ×         |
 | hostname     |  hostname |         ×         |

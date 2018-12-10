@@ -240,7 +240,17 @@ proc sed*(cliS: CLIstring, args): CLIstring =
     let f2 = open(getHomeDir() & "/nshcathe/res.txt", fmRead)
     CLIstring(f2.readAll())
 
-proc join*(args): CLIstring =
+proc tee*(args): CLIstring =
+    exec("sed", args)
+proc tee*(cliS: CLIstring, args): CLIstring =
+    let f = open(getHomeDir() & "/nshcathe/log.txt", fmWrite)
+    f.write(cliS)
+    f.close
+    discard execShellCmd(fmt"cat {getHomeDir()}/nshcathe/log.txt | tee " & args.join(" ") & fmt" > {getHomeDir()}nshcathe/res.txt")
+    let f2 = open(getHomeDir() & "/nshcathe/res.txt", fmRead)
+    CLIstring(f2.readAll())
+
+proc fjoin*(args): CLIstring =
     exec("join", args)
 
 proc diff*(args): CLIstring =
@@ -364,6 +374,9 @@ proc which*(args): CLIstring =
 
 proc tar*(args): CLIstring =
     exec("tar", args)
+
+proc id*(args): CLIstring =
+    exec("id", args)
 
 proc gunzip*(args): CLIstring = discard
 
