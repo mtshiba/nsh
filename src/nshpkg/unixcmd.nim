@@ -66,7 +66,7 @@ proc getidx(): int =
         res.add(histForRead.readLine() & "\n")
     return res.split("\n")[^2].split(" ")[0].parseInt()
 
-proc exec(cmdName: string, args): CLIstring =
+proc execute(cmdName: string, args): CLIstring =
     let cmd = cmdName & " " & args.join(" ")
     addhist(fmt"{getidx()+1} {cmd}" & "\n")
     return CLIstring(execProcess(cmd))
@@ -147,66 +147,66 @@ proc cd*(dir: string) =
     setCurrentDir(dir)
 
 proc rm*(args) =
-    echo exec("rm", args)
+    echo execute("rm", args)
 
 proc ls*(args): CLIstring =
-    exec("ls", args)[0..^2]
+    execute("ls", args)[0..^2]
 
 proc mkdir*(args) {.inline.} =
-    echo exec("mkdir", args)
+    echo execute("mkdir", args)
 
 proc rmdir*(args) =
-    echo exec("rmdir", args)
+    echo execute("rmdir", args)
 
 proc cp*(args) =
-    echo exec("cp", args)
+    echo execute("cp", args)
 
 proc mv*(args) =
-    echo exec("mv", args)
+    echo execute("mv", args)
 
 proc pushd*(args) =
-    echo exec("pushd", args)
+    echo execute("pushd", args)
 
 proc popd*() =
     addhist(fmt"{getidx()+1} popd" & "\n")
     echo execProcess(fmt"popd")
 
 proc cat*(args): CLIstring =
-    exec("cat", args)
+    execute("cat", args)
 
 proc touch*(args) =
-    echo exec("touch", args)
+    echo execute("touch", args)
 
 proc file*(args): CLIstring =
-    exec("file", args)
+    execute("file", args)
 
 proc ffind*(args): CLIstring =
-    exec("find", args)
+    execute("find", args)
 
 proc locate*(args): CLIstring =
-    exec("locate", args)
+    execute("locate", args)
 
 proc more*(args): CLIstring =
     {.hint: "this proc is different from the behavior at the terminal.".}
-    exec("more", args)
+    execute("more", args)
 
 proc less*(args): CLIstring =
     {.hint: "this proc is different from the behavior at the terminal.".}
-    exec("less", args)
+    execute("less", args)
 
 when not defined(windows):
     proc lv*(args): CLIstring =
         {.hint: "this proc is different from the behavior at the terminal.".}
-        exec("lv", args)
+        execute("lv", args)
 
 proc head*(args): CLIstring =
-    exec("head", args)
+    execute("head", args)
 
 proc tail*(args): CLIstring =
-    exec("tail", args)
+    execute("tail", args)
 
 proc grep*(args): CLIstring =
-    exec("grep", args)
+    execute("grep", args)
 proc grep*(fileName: CLIstring, args): CLIstring =
     let argsStr = args.join(" ")
     addhist(fmt"{getidx()+1} echo someFile | grep {argsStr}" & "\n")
@@ -221,7 +221,7 @@ proc grep*(fileName: CLIstring, args): CLIstring =
     return CLIstring(outs)
 
 proc wc*(args): CLIstring =
-    exec("wc", args)
+    execute("wc", args)
 proc wc*(cliS: CLIstring, args): CLIstring =
     let f = open(getHomeDir() & "/nshcathe/log.txt", fmWrite)
     f.write(cliS)
@@ -231,7 +231,7 @@ proc wc*(cliS: CLIstring, args): CLIstring =
     CLIstring(f2.readAll())
 
 proc sed*(args): CLIstring =
-    exec("sed", args)
+    execute("sed", args)
 proc sed*(cliS: CLIstring, args): CLIstring =
     let f = open(getHomeDir() & "/nshcathe/log.txt", fmWrite)
     f.write(cliS)
@@ -241,7 +241,7 @@ proc sed*(cliS: CLIstring, args): CLIstring =
     CLIstring(f2.readAll())
 
 proc tee*(args): CLIstring =
-    exec("sed", args)
+    execute("sed", args)
 proc tee*(cliS: CLIstring, args): CLIstring =
     let f = open(getHomeDir() & "/nshcathe/log.txt", fmWrite)
     f.write(cliS)
@@ -251,19 +251,19 @@ proc tee*(cliS: CLIstring, args): CLIstring =
     CLIstring(f2.readAll())
 
 proc fjoin*(args): CLIstring =
-    exec("join", args)
+    execute("join", args)
 
 proc diff*(args): CLIstring =
-    exec("diff", args)
+    execute("diff", args)
 
 proc cut*(args): CLIstring =
-    exec("cut", args)
+    execute("cut", args)
 
 proc uniq*(args): CLIstring =
-    exec("uniq", args)
+    execute("uniq", args)
 
 proc sort*(args): CLIstring =
-    exec("sort", args)
+    execute("sort", args)
 
 proc nkf*(args): CLIstring =
     addhist(fmt"""{getidx()+1} nkf {args.join(" ")}""" & "\n")
@@ -336,13 +336,13 @@ proc chmod*(args) =
     when defined(windows):
         raise newException(Error, "this proc isn't available")
     else:
-        discard exec("chmod", args)
+        discard execute("chmod", args)
 
 proc xlock*(args) =
     when defined(windows):
         raise newException(Error, "this proc isn't available")
     else:
-        discard exec("xlock", args)
+        discard execute("xlock", args)
 
 proc last*() =
     when defined(windows):
@@ -352,10 +352,10 @@ proc last*() =
         discard execProcess("last")
 
 proc du*(args): CLIstring =
-    exec("du", args)
+    execute("du", args)
 
 proc ln*(args) =
-    discard exec("ln", args)
+    discard execute("ln", args)
 
 # TODO: implemention
 proc telnet*(host: string) = discard
@@ -367,16 +367,16 @@ proc scp*(args): CLIstring = discard
 proc sftp*(user_host: string): CLIstring = discard
 
 proc man*(args): CLIstring =
-    exec("man", args)
+    execute("man", args)
 
 proc which*(args): CLIstring =
-    exec("which", args)
+    execute("which", args)
 
 proc tar*(args): CLIstring =
-    exec("tar", args)
+    execute("tar", args)
 
 proc id*(args): CLIstring =
-    exec("id", args)
+    execute("id", args)
 
 proc gunzip*(args): CLIstring = discard
 
@@ -388,7 +388,7 @@ proc su*() =
         discard execProcess("su")
 
 proc shutdown*(args) =
-    discard exec("shutdown", args)
+    discard execute("shutdown", args)
 
 proc reboot*() =
     when defined(windows):
@@ -406,10 +406,10 @@ proc groups*(): CLIstring =
     return CLIstring(execProcess("groups"))
 
 proc chown*(args): CLIstring =
-    exec("chown", args)
+    execute("chown", args)
 
 proc chgrp*(args): CLIstring =
-    exec("chgrp", args)
+    execute("chgrp", args)
 
 proc useradd*(user: string) =
     when defined(windows):
@@ -440,16 +440,16 @@ proc groupdel*(user: string) =
         discard execProcess(fmt"groupdel {user}")
 
 proc who*(args): CLIstring =
-    exec("who", args)
+    execute("who", args)
 
 proc whoami*(args): CLIstring =
-    exec("whoami", args)
+    execute("whoami", args)
 
 proc vset*(args): CLIstring =
-    exec("vset", args)
+    execute("vset", args)
 
 proc printenv*(args): CLIstring =
-    exec("printenv", args)
+    execute("printenv", args)
 
 proc vexport*(name: string) = discard
     #[let
@@ -461,13 +461,13 @@ proc vexport*(name: string) = discard
 proc vexport*() = discard
 
 proc watch*(args): CLIstring =
-    exec("watch", args)
+    execute("watch", args)
 
 proc stty*(args): CLIstring =
-    exec("stty", args)
+    execute("stty", args)
 
 proc date*(args): CLIstring =
-    exec("date", args)
+    execute("date", args)
 
 proc sleep*[T: not string](sec: T) =
     os.sleep((sec*1000).toInt)
@@ -520,3 +520,4 @@ template xargs*(res: CLIstring, cmd: untyped, args: varargs[string]): CLIstring 
 
 if isMainModule:
     echo time os.sleep(1000)
+    # aaaaa

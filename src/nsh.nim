@@ -4,29 +4,23 @@ import osproc
 import nre
 import os
 import terminal
-import colors
 
-import nshpkg/unixcmd
 
 {.push checks:off, optimization: speed.}
 
 
 const
-    version = "0.2.1"
-    date = "Dec 9 2018, 19:04:00"
+    version = "0.3.1"
+    date = "Dec 14 2018, 12:04:00"
     message = fmt"""
 Nsh {version} (default, {date}) [{hostOS}, {hostCPU}]
-    nsh [-tcc]
-    -tcc          : using tcc compiler for compiling. you can change later.
-
     :back         : clear last line.
     :clear        : clear all lines.
     :quit|exit    : quit this program.
     :show         : display history.
-    :tcc on|off   : switch compiler to tcc/default.
 """
     initcode = """
-import nshpkg/unixcmd
+import nshpkg/unixcmd_script
 
 template on_ce(state: void): void = discard
 template on_ce[T: not void](arg: T): void =
@@ -70,9 +64,24 @@ type Shell = object of RootObj
     code*: string
     errc: int
 
-var useTcc = ""
-if commandLineParams().len != 0:
-    useTcc = if commandLineParams()[0].find("-tcc") != -1: "--cc:tcc" else: ""
+proc createRoot() =
+    if not existsDir(getHomeDir() & "nshcathe"):
+        createDir(getHomeDir() & "nshcathe")
+    if not existsFile(getHomeDir() & "nshcathe/hist.cfg"):
+        let f = open(getHomeDir() & "nshcathe/hist.cfg", fmWrite)
+        f.writeLine("\"0 start\"")
+        f.close
+    if not existsFile(getHomeDir() & "nshcathe/rootdir.txt"):
+        let f = open(getHomeDir() & "nshcathe/rootdir.txt", fmWrite)
+        f.writeLine(getCurrentDir())
+        f.close
+    if not existsFile(getHomeDir() & "nshcathe/log.txt"):
+        discard execCmd(fmt"touch {getHomeDir()}nshcathe/log.txt")
+    if not existsFile(getHomeDir() & "nshcathe/res.txt"):
+        discard execCmd(fmt"touch {getHomeDir()}nshcathe/res.txt")
+
+createRoot()
+
 
 proc showprefix(sh: Shell) =
     echo ""
@@ -88,7 +97,7 @@ proc showprefix(sh: Shell) =
 proc escape(s: var string) =
     s = s.replace(re".\[D", "").replace("[", "")
 proc save(self: Shell) =
-    let f = open(getHomeDir() & "/nshcathe/repl.nim", fmWrite)
+    let f = open(getHomeDir() & "/nshcathe/repl.nims", fmWrite)
     f.write(self.code)
     f.close()
 
@@ -199,13 +208,6 @@ proc main() =
             sh.delLine()
             sh.nowblock = sh.pastblock
             continue
-        of ":tcc on":
-            useTcc = "--cc:tcc"
-            continue
-        of ":tcc off":
-            useTcc = ""
-            continue
-        # for debuging
         of ":save":
             sh.save()
             continue
@@ -215,7 +217,7 @@ proc main() =
         # Change directory action must run on this file.
         if order.startsWith("cd ") or order.startswith("cd("):
             try:
-                cd order.multireplace(("cd ", ""), ("\"", ""), ("cd(", ""), (")", ""))
+                setCurrentDir(order.multireplace(("cd ", ""), ("\"", ""), ("cd(", ""), (")", "")))
                 sh.errc = 0
             except:
                 stdout.styledWrite(fgRed, "Error: ")
@@ -247,16 +249,20 @@ proc main() =
             if sh.nowblock != @[Main]:
                 discard sh.nowblock.pop
             if sh.nowblock.len == 1 and not sh.pastblock.isContinueBlock():
-                let (outs, errc) = execCmdEx(fmt"nim c -r {useTcc} --checks:off --hints:off --opt:none --verbosity:0 {getHomeDir()}/nshcathe/repl.nim")
+                let (outs, errc) = execCmdEx(fmt"nim e -r --checks:off --hints:off --opt:none --verbosity:0 {getHomeDir()}/nshcathe/repl.nims")
                 if errc == 0:
-                    echo outs
+                    # remove last '\n'
+                    if outs.len >= 2:
+                        echo outs[0..^2]
+                    else:
+                        echo outs
                     sh.errc = 0
                     let pastcode = sh.code.split("\n")[^2].replace(" ", "")
                     if not sh.pastblock.canContainEcho():
                         sh.delOnce()
                 else:
                     stdout.styledWrite(fgRed, "Error: ")
-                    stdout.write(outs.replace(re"repl.nim\(.*\) Error: ", ""))
+                    stdout.write(outs.replace(re"repl.nims\(.*\) Error: ", ""))
                     stdout.flushFile()
                     sh.errc = -1
                     sh.delLine()
@@ -323,14 +329,18 @@ proc main() =
                     sh.nowblock.add(Other)
 
             if sh.nowblock.len() == 1 and not sh.pastblock.isContinueBlock():
-                let (outs, errc) = execCmdEx(fmt"nim c -r {useTcc} --checks:off --hints:off --opt:none --verbosity:0 {getHomeDir()}/nshcathe/repl.nim")
+                let (outs, errc) = execCmdEx(fmt"nim e -r --checks:off --hints:off --opt:none --verbosity:0 {getHomeDir()}/nshcathe/repl.nims")
                 if errc == 0:
-                    echo outs
+                    # remove last '\n'
+                    if outs.len >= 2:
+                        echo outs[0..^2]
+                    else:
+                        echo outs
                     sh.errc = 0
                     sh.delOnce()
                 else:
                     stdout.styledWrite(fgRed, "Error: ")
-                    stdout.write(outs.replace(re"repl.nim\(.*\) Error: ", ""))
+                    stdout.write(outs.replace(re"repl.nims\(.*\) Error: ", ""))
                     stdout.flushFile()
                     sh.errc = -1
                     sh.delLine()
@@ -338,4 +348,7 @@ proc main() =
 
 
 if isMainModule:
-    main()
+    try:
+        main()
+    finally:
+        resetAttributes()

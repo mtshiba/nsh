@@ -4,13 +4,10 @@
 [![nimble](https://raw.githubusercontent.com/yglukhov/nimble-tag/master/nimble.png)](https://github.com/yglukhov/nimble-tag)
 
 nsh is the **SH**ell implemented on **N**im.
-nsh can use not only shell commands, but also Nim code.  
-Some shell commands are wrapped or implemanted by Nim,
-so you can use nsh instead of Cygwin!
+nsh can use not only shell commands, but also Nim code.
 
-
-* Commands are implemented in 'nshpkg/unixcmd.nim'.
-If you want these procs in other source code, use 'import nshpkg/unixcmd'.
+* Commands are implemented in 'nshpkg/unixcmd.nim' and 'nshpkg/unixcmd_script.nim'.
+If you want these procs in other source code, use 'import nshpkg/unixcmd'. (If you use NimScript, use 'import nshpkg/unixcmd_script.nim'.)
 
 * You can use 'tocl' to export nim variables to shell.
 
@@ -31,10 +28,6 @@ nimble install https://githib.com/gmshiba/nsh
 ```
 Prompt: Missing directory C:\pathTo\.nimble\pkgs\nsh-0.x.x\src\nshpkg. Continue? [y/N]
 ```
-
-* By default, nsh's reaction for nim code is slow since Nim is a compiler language.
-It is good to use [TCC](https://bellard.org/tcc/) for the compiler to speed up the reaction. So I recommend to install it. You can use ':tcc on' to use TCC for compiler.
-
 
 # Todo
 
